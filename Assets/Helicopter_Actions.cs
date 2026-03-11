@@ -136,6 +136,15 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Engine"",
+                    ""type"": ""Button"",
+                    ""id"": ""a034733e-90c0-4d2c-8ac6-364d26fb96f0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -402,6 +411,17 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Pedals"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cf5ae597-8845-440d-a756-348347d01121"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Engine"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -992,6 +1012,7 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
         m_Player_Pedals = m_Player.FindAction("Pedals", throwIfNotFound: true);
         m_Player_Throttle = m_Player.FindAction("Throttle", throwIfNotFound: true);
         m_Player_Collective = m_Player.FindAction("Collective", throwIfNotFound: true);
+        m_Player_Engine = m_Player.FindAction("Engine", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1090,6 +1111,7 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pedals;
     private readonly InputAction m_Player_Throttle;
     private readonly InputAction m_Player_Collective;
+    private readonly InputAction m_Player_Engine;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1121,6 +1143,10 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Collective".
         /// </summary>
         public InputAction @Collective => m_Wrapper.m_Player_Collective;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Engine".
+        /// </summary>
+        public InputAction @Engine => m_Wrapper.m_Player_Engine;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1162,6 +1188,9 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
             @Collective.started += instance.OnCollective;
             @Collective.performed += instance.OnCollective;
             @Collective.canceled += instance.OnCollective;
+            @Engine.started += instance.OnEngine;
+            @Engine.performed += instance.OnEngine;
+            @Engine.canceled += instance.OnEngine;
         }
 
         /// <summary>
@@ -1188,6 +1217,9 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
             @Collective.started -= instance.OnCollective;
             @Collective.performed -= instance.OnCollective;
             @Collective.canceled -= instance.OnCollective;
+            @Engine.started -= instance.OnEngine;
+            @Engine.performed -= instance.OnEngine;
+            @Engine.canceled -= instance.OnEngine;
         }
 
         /// <summary>
@@ -1523,6 +1555,13 @@ public partial class @Helicopter_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCollective(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Engine" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEngine(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
