@@ -17,16 +17,16 @@ public class PlayerControls : MonoBehaviour
     
     [Header("Engine Control Vars")]
     public float maxEngineSpeed = 7000.0f;
-    [SerializeField] bool engineActive = false;
-    [SerializeField] [Range(0f, 1f)] float currentEngineSpeed;
+    public bool engineActive = false;
+    [SerializeField] [Range(0f, 1f)] float currentEngineSpeed = 0f;
     [Header("Main Rotor Vars")]
     public bool mainRotorActive = true;
-    public float maxMainRotorTorque = 10000.0f;
-    private float currentMainRotorTorque = 0.0f;
+    public float maxMainRotorTorque = 2000.0f;
+    [SerializeField] float currentMainRotorTorque;
     [Header("Secondary Rotor Vars")]
     public bool secondaryRotorActive = true;
-    public float maxSecondaryRotorTorque = 10000.0f;
-    private float currentSecondaryRotorTorque = 0.0f;
+    public float maxSecondaryRotorTorque = 400.0f;
+    [SerializeField] [Range(0f, 1f)] float currentSecondaryRotorTorque = 0.0f;
     [Header("Velocity Vars")]
     public float maxMainRotorVelocity = 10000.0f;
     public float maxSecondaryRotorVelocity = 10000.0f;
@@ -68,14 +68,24 @@ public class PlayerControls : MonoBehaviour
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    { 
-        rb = GetComponent<Rigidbody>();
+    {
+        // Audio Source
         audioSource = GetComponent<AudioSource>();
+        audioSource.pitch = 0.0f;
+        audioSource.Play();
+        
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (engineActive && currentEngineSpeed > 0)
+        {
+            // audio source's pitch 
+            audioSource.pitch = 0.25f + currentEngineSpeed * 0.750f;
+        }
+
         if (engineAction != null && engineAction.WasPressedThisFrame())
         {
             engineActive = !engineActive;
@@ -96,19 +106,21 @@ public class PlayerControls : MonoBehaviour
         var collective = collectiveAction.ReadValue<float>();
         var pedal = pedalAction.ReadValue<float>();
         
-
         if (engineActive)
         {
             currentEngineSpeed = Mathf.Clamp(currentEngineSpeed + throttle * Time.fixedDeltaTime, 0.0f, 1.2f);
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
             Debug.Log("Engine Speed = " + currentEngineSpeed);
         }
         else
         {
             currentEngineSpeed = Mathf.Max(0f, currentEngineSpeed - Time.fixedDeltaTime);
+        }
+
+        if (mainRotorActive)
+        {
+            currentMainRotorTorque = collective * maxMainRotorTorque * currentEngineSpeed * forwardRotorTorqueModifier;
+            Debug.Log("Main Rotor Torque = " + currentMainRotorTorque); 
+            rb.AddRelativeForce(Vector3.up * currentMainRotorTorque);
         }
     }
 }
