@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-
+// using System;
+// using UnityEngine.InputSystem.Controls;
 // [RequireComponent(typeof(PlayerInput))]
 
 [RequireComponent(typeof(Rigidbody))]
@@ -11,25 +11,26 @@ using UnityEngine.InputSystem.Controls;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class PlayerControls : MonoBehaviour
 {
-    public GameObject mainRotor;
-    public GameObject secondaryRotor;
+    [Header("Rotor Game Objects")]
+    [SerializeField] GameObject mainRotor;
+    [SerializeField] GameObject secondaryRotor;
     
-    // Engine Control Vars
+    [Header("Engine Control Vars")]
     public float maxEngineSpeed = 7000.0f;
-    private float currentEngineSpeed = 0.0f;
-    public bool engineActive = false;
-    // Main Rotor Vars
+    [SerializeField] bool engineActive = false;
+    [SerializeField] [Range(0f, 1f)] float currentEngineSpeed;
+    [Header("Main Rotor Vars")]
     public bool mainRotorActive = true;
     public float maxMainRotorTorque = 10000.0f;
     private float currentMainRotorTorque = 0.0f;
-    // Secondary Rotor Vars
+    [Header("Secondary Rotor Vars")]
     public bool secondaryRotorActive = true;
     public float maxSecondaryRotorTorque = 10000.0f;
     private float currentSecondaryRotorTorque = 0.0f;
-    // Velocity Vars
+    [Header("Velocity Vars")]
     public float maxMainRotorVelocity = 10000.0f;
     public float maxSecondaryRotorVelocity = 10000.0f;
-    // Control Modifiers
+    [Header("Control Modifiers")]
     public float forwardRotorTorqueModifier = 1.0f;
     public float sidewayRotorTorqueModifier = 1.0f;
     
@@ -75,10 +76,10 @@ public class PlayerControls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (engineAction.triggered)
+        if (engineAction != null && engineAction.WasPressedThisFrame())
         {
             engineActive = !engineActive;
-            Debug.Log("Engine active = " + engineActive);
+            Debug.Log($"Engine active = {engineActive}");
         }
 
         if (mainRotorActive)
@@ -99,7 +100,7 @@ public class PlayerControls : MonoBehaviour
         if (engineActive)
         {
             currentEngineSpeed = Mathf.Clamp(currentEngineSpeed + throttle * Time.fixedDeltaTime, 0.0f, 1.2f);
-            while (!audioSource.isPlaying)
+            if (!audioSource.isPlaying)
             {
                 audioSource.Play();
             }
@@ -107,7 +108,7 @@ public class PlayerControls : MonoBehaviour
         }
         else
         {
-            currentEngineSpeed -= Time.deltaTime;
+            currentEngineSpeed = Mathf.Max(0f, currentEngineSpeed - Time.fixedDeltaTime);
         }
     }
 }
